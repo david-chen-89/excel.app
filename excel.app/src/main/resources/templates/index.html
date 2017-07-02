@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+<title>Static Top Navbar Example for Bootstrap</title>
+<!-- Bootstrap core CSS -->
+<link href="css/bootstrap.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css" />
+<!-- <link rel="stylesheet" type="text/css" href="css/non-responsive.css" /> -->
+<script type="text/javascript" charset="utf8" src="js/jquery.js"></script>
+<script type="text/javascript" charset="utf8"
+	src="js/jquery.dataTables.js"></script>
+
+<script type="text/javascript" th:inline="javascript">
+/*<![CDATA[*/
+           var columnList=[[${columns}]];
+           var dataSet=[[${data}]];
+           var cols =  new Array();
+       	   for (i = 0; i < columnList.length; i++) {
+       		  var col = { title: columnList[i]};  // { title: "Salary" }
+        	  cols.push(col);
+        	}
+           $(document).ready(function() {
+               $('#tab').DataTable( {
+                   data: dataSet,
+                   "order": [],
+                   columns: cols,
+               } );
+           } );
+           /*]]>*/
+</script>
+</head>
+
+<body>
+	<div th:replace="fragment/header :: header"></div>
+	<div  style="margin-top: 70px">
+		<table id="tab" class="display" ></table>
+	</div>
+	<!-- /container -->
+
+	<div th:replace="fragment/footer:: footer"></div>
+</body>
+</html>
