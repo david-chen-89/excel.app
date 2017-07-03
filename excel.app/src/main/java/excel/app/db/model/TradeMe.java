@@ -5,9 +5,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Inventory")
-public class Inventory {
-	@Id
+@Table(name = "TradeMe")
+public class TradeMe {
 	private String shipmentNumber;
 	private String status;
 	private String warehouseCode;
@@ -17,6 +16,7 @@ public class Inventory {
 	private String trackingReference;
 	private String trackingReferenceRD;
 	private String customer;
+	@Id
 	private String customerReference;
 	private String customerEmail;
 	private String phoneNumber;

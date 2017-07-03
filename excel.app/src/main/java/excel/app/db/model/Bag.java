@@ -5,8 +5,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "fastway_bags_gd")
-public class Fastway {
+@Table(name = "fastway_bags")
+public class Bag {
 	private String sku;
 	@Id
 	private String barcode;

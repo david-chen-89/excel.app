@@ -1,7 +1,7 @@
 package excel.app;
 
 public final class Constants {
-	public static String APP_NAME = "Excel App";
+	public static String APP_NAME = "Shipment Report";
 
 	public static class TAB1 {
 		public static String Shipment_Number = "Shipment Number";

@@ -25,8 +25,19 @@
 <body>
 	<div th:replace="fragment/header :: header"></div>
 	<div class="container" style="margin-top: 70px">
+		
+		<div class="col-xs-12 col-md-1">
+			<label>Download:</label>
+		</div>
+		<div class="col-xs-12 col-md-2">
+			<a href="/download?table=tab3">FastWay Shipment</a>
+		</div>
+		<div class="col-xs-12 col-md-2">
+			<a href="/download?table=tab1">TradeMe Shipment</a>
+		</div>
+		<a href="/download?table=tab2">FastWay Bag</a>
 		<div class="panel panel-default">
-			<div class="panel-heading">Table 1</div>
+			<div class="panel-heading">Table: TradeMe Shipment</div>
 			<div class="panel-body">
 				<label>Add or Update</label>
 				<form method="POST" enctype="multipart/form-data" action="/load/tab1">
@@ -44,10 +55,10 @@
 				<form method="POST" action="/remove/tab1">
 					<label>Remove</label>
 					<div class="form-group">
-						<label class="sr-only" for="shipmentNum">Shipment Number</label>
+						<label class="sr-only" for="customerReference">Customer Ref</label>
 						<div class="input-group col-lg-4">
-							<div class="input-group-addon">Shipment Number</div>
-							<input type="text" class="form-control input-sm" name="shipmentNum" placeholder="SO42677/1" />
+							<div class="input-group-addon">Customer Ref</div>
+							<input type="text" class="form-control input-sm" name="customerReference" placeholder="SO42677/1" />
 						</div>
 					</div>
 					<button type="submit" class="btn btn-default">Submit</button>
@@ -73,10 +84,10 @@
 				<form method="POST" action="/remove/tab2">
 					<label>Remove</label>
 					<div class="form-group">
-						<label class="sr-only" for="barcode">Barcode</label>
+						<label class="sr-only" for="sku">SKU</label>
 						<div class="input-group col-lg-4">
-							<div class="input-group-addon">Barcode</div>
-							<input type="text" class="form-control input-sm" name="barcode" placeholder="A00001" />
+							<div class="input-group-addon">SKU</div>
+							<input type="text" class="form-control input-sm" name="sku" placeholder="A00001" />
 						</div>
 					</div>
 					<button type="submit" class="btn btn-default">Submit</button>

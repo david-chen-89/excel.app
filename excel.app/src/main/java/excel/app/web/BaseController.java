@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import excel.app.Constants;
 import excel.app.db.DbService;
-import excel.app.db.model.Fastway;
+import excel.app.db.model.Bag;
+import excel.app.db.model.TradeMe;
 
 @Controller
 public class BaseController {
@@ -58,18 +59,55 @@ public class BaseController {
 	public String tab1(Map<String, Object> model) {
 		model.put("active", "tab1");
 		ArrayList<String> columns = new ArrayList<String>();
-		columns.add(Constants.FASTWAY_BAGS_GD.SKU);
-		columns.add(Constants.FASTWAY_BAGS_GD.Barcode);
-		columns.add(Constants.FASTWAY_BAGS_GD.Location);
-		columns.add(Constants.FASTWAY_BAGS_GD.Bag);
-		columns.add(Constants.FASTWAY_BAGS_GD.Description);
+		columns.add(Constants.TAB1.Shipment_Number);
+		columns.add(Constants.TAB1.Status);
+		columns.add(Constants.TAB1.Warehouse_Code);
+		columns.add(Constants.TAB1.Requested_Shipping_Date_SO);
+		columns.add(Constants.TAB1.Shipment_Method);
+		columns.add(Constants.TAB1.Shipped_With);
+		columns.add(Constants.TAB1.Tracking_Reference);
+		columns.add(Constants.TAB1.Tracking_Reference_RD);
+		columns.add(Constants.TAB1.Customer);
+		columns.add(Constants.TAB1.Customer_Reference);
+		columns.add(Constants.TAB1.Customer_Email);
+		columns.add(Constants.TAB1.Phone_Number);
+		columns.add(Constants.TAB1.Address1);
+		columns.add(Constants.TAB1.Address2);
+		columns.add(Constants.TAB1.Address3);
+		columns.add(Constants.TAB1.Town_City);
+		columns.add(Constants.TAB1.Post_Code);
+		columns.add(Constants.TAB1.Country);
+		columns.add(Constants.TAB1.Region_State);
+		columns.add(Constants.TAB1.Product_Code);
+		columns.add(Constants.TAB1.Product_Alternate_Code);
+		columns.add(Constants.TAB1.Product_Name);
+		columns.add(Constants.TAB1.UOM);
+		columns.add(Constants.TAB1.Product_Public_Notes);
+		columns.add(Constants.TAB1.Product_Private_Notes);
+		columns.add(Constants.TAB1.Qty_Requested);
+		columns.add(Constants.TAB1.Qty_Packed);
+		columns.add(Constants.TAB1.Qty_Backorder);
+		columns.add(Constants.TAB1.Unit_Price_Inc_Tax);
+		columns.add(Constants.TAB1.Line_Total_Inc_Tax);
+		columns.add(Constants.TAB1.Notes);
+		columns.add(Constants.TAB1.Order_Notes_Public);
+		columns.add(Constants.TAB1.Actual_Shipping_Date_Shipment);
+		columns.add(Constants.TAB1.Shipped_By);
 		model.put("columns", columns);
 
 		ArrayList<String[]> data = new ArrayList<String[]>();
-		data.add(new String[] { "COMPUTER138nzsale", "A00001", "	LA00001", "9", "DP to VGA 1.8M cable" });
-		data.add(new String[] { "computer118", "A00002", "LA00002", "9", "D/P MALE TO DVI ADPT 24+5" });
-		data.add(new String[] { "computer120", "A00003", "LA00003", "9", "D/P MALE TO VGA ADPT" });
-		data.add(new String[] { "computer192", "A00004", "LA00004", "9", "HDMI FEMALE TO DVI MALE 24+5 ADPT" });
+		List<TradeMe> inventories = dbService.getAllTradeMe();
+		for (TradeMe inventory : inventories) {
+			data.add(new String[] { inventory.getShipmentNumber(), inventory.getStatus(), inventory.getWarehouseCode(), inventory.getRequestedShippingDateSO(),
+					inventory.getShipmentMethod(), inventory.getShippedWith(), inventory.getTrackingReference(), inventory.getTrackingReferenceRD(),
+					inventory.getCustomer(), inventory.getCustomerReference(), inventory.getCustomerEmail(), inventory.getPhoneNumber(),
+					inventory.getAddress1(), inventory.getAddress2(), inventory.getAddress3(), inventory.getTownCity(), inventory.getPostCode(),
+					inventory.getCountry(), inventory.getRegionState(), inventory.getProductCode(), inventory.getProductAlternateCode(),
+					inventory.getProductName(), inventory.getUOM(), inventory.getProductPublicNotes(), inventory.getProductPrivateNotes(),
+					inventory.getQtyRequested(), inventory.getQtyPacked(), inventory.getQtyBackorder(), inventory.getUnitPriceIncTax(),
+					inventory.getLineTotalIncTax(), inventory.getNotes(), inventory.getOrderNotesPublic(), inventory.getActualShippingDateShipment(),
+					inventory.getShippedBy() });
+		}
 		model.put("data", data);
 		return "index";
 	}
@@ -86,8 +124,8 @@ public class BaseController {
 		model.put("columns", columns);
 
 		ArrayList<String[]> data = new ArrayList<String[]>();
-		List<Fastway> fastways = dbService.getAllFastway();
-		for (Fastway fastway : fastways) {
+		List<Bag> fastways = dbService.getAllBag();
+		for (Bag fastway : fastways) {
 			data.add(new String[] { fastway.getSku(), fastway.getBarcode(), fastway.getLocation(), fastway.getBag(), fastway.getDescription() });
 		}
 		model.put("data", data);
@@ -99,4 +137,9 @@ public class BaseController {
 		model.put("active", "admin");
 		return "admin";
 	}
+
+	//	@GetMapping("/error")
+	//	public String error(Map<String, Object> model) {
+	//		return "error";
+	//	}
 }

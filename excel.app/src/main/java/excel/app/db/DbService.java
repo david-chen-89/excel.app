@@ -7,62 +7,62 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import excel.app.db.model.Fastway;
-import excel.app.db.model.Inventory;
+import excel.app.db.model.Bag;
+import excel.app.db.model.TradeMe;
 
 @Transactional
 @Service
 public class DbService {
 
 	@Autowired
-	private FastwayDao fastwayDao;
+	private BagDao bagDao;
 	@Autowired
-	private InventoryDao inventoryDao;
+	private TradeMeDao tradeMeDao;
 
-	public void addOrUpdateFastways(List<Fastway> fastways) {
-		for (Fastway fastway : fastways) {
-			fastwayDao.update(fastway);
+	public void addOrUpdateBags(List<Bag> bags) {
+		for (Bag bag : bags) {
+			bagDao.update(bag);
 		}
 	}
 
-	public void addOrUpdateFastway(Fastway fastway) {
-		fastwayDao.update(fastway);
+	public void addOrUpdateBag(Bag bag) {
+		bagDao.update(bag);
 	}
 
-	public List<Fastway> getAllFastway() {
-		return fastwayDao.getAll();
+	public List<Bag> getAllBag() {
+		return bagDao.getAll();
 	}
 
-	public void reloadFastway(List<Fastway> fastways) {
-		fastwayDao.removeAll();
-		addOrUpdateFastways(fastways);
+	public void reloadBag(List<Bag> bags) {
+		bagDao.removeAll();
+		addOrUpdateBags(bags);
 	}
 
-	public void removeFastway(String barcode) {
-		fastwayDao.remove(barcode);
+	public void removeBag(String sku) {
+		bagDao.remove(sku);
 	}
 
-	// Inventory
-	public void addOrUpdateInventories(List<Inventory> inventories) {
-		for (Inventory inventory : inventories) {
-			inventoryDao.update(inventory);
+	// TradeMe
+	public void addOrUpdateTradeMes(List<TradeMe> tradeMes) {
+		for (TradeMe tradeMe : tradeMes) {
+			tradeMeDao.update(tradeMe);
 		}
 	}
 
-	public void addOrUpdateInventory(Inventory inventory) {
-		inventoryDao.update(inventory);
+	public void addOrUpdateTradeMe(TradeMe tradeMe) {
+		tradeMeDao.update(tradeMe);
 	}
 
-	public List<Inventory> getAllInventory() {
-		return inventoryDao.getAll();
+	public List<TradeMe> getAllTradeMe() {
+		return tradeMeDao.getAll();
 	}
 
-	public void reloadInventory(List<Inventory> inventories) {
-		inventoryDao.removeAll();
-		addOrUpdateInventories(inventories);
+	public void reloadTradeMe(List<TradeMe> tradeMes) {
+		tradeMeDao.removeAll();
+		addOrUpdateTradeMes(tradeMes);
 	}
 
-	public void removeInventory(String barcode) {
-		inventoryDao.remove(barcode);
+	public void removeTradeMe(String customerReference) {
+		tradeMeDao.remove(customerReference);
 	}
 }

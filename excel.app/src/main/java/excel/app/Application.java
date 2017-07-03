@@ -94,7 +94,7 @@ public class Application {
 
 	private static void showTray() {
 		SystemTray systemTray = SystemTray.getSystemTray();
-		Image image = Toolkit.getDefaultToolkit().getImage("image/icon.gif");
+		Image image = Toolkit.getDefaultToolkit().getImage("image/icon.png");
 
 		PopupMenu trayPopupMenu = new PopupMenu();
 		MenuItem openBrowserAction = new MenuItem("Open Browser");
