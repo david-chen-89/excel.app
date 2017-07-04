@@ -1,4 +1,4 @@
-package excel.app.db;
+package shipment.report.db;
 
 import java.util.List;
 
@@ -7,8 +7,8 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import excel.app.db.model.Bag;
-import excel.app.db.model.TradeMe;
+import shipment.report.db.model.Bag;
+import shipment.report.db.model.TradeMe;
 
 @Transactional
 @Service
@@ -18,6 +18,8 @@ public class DbService {
 	private BagDao bagDao;
 	@Autowired
 	private TradeMeDao tradeMeDao;
+	@Autowired
+	private FastWayDao fastWayDao;
 
 	public void addOrUpdateBags(List<Bag> bags) {
 		for (Bag bag : bags) {
@@ -64,5 +66,10 @@ public class DbService {
 
 	public void removeTradeMe(String customerReference) {
 		tradeMeDao.remove(customerReference);
+	}
+
+	//FastWay
+	public List<Object[]> getAllFastWay() {
+		return fastWayDao.getAll();
 	}
 }

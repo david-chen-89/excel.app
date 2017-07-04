@@ -1,8 +1,9 @@
-package excel.app;
+package shipment.report;
 
 import java.awt.AWTException;
 import java.awt.Desktop;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
@@ -17,6 +18,7 @@ import java.net.Inet4Address;
 import java.net.URI;
 import java.nio.charset.Charset;
 
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 import org.apache.commons.logging.Log;
@@ -37,6 +39,10 @@ public class Application {
 			start(args);
 		} catch (Throwable t) {
 			logger.error("failed to start App", t);
+			if (!GraphicsEnvironment.isHeadless()) {
+				JOptionPane.showMessageDialog(null, "Failed to start App. Please check the log.");
+			}
+			System.exit(0);
 		}
 	}
 

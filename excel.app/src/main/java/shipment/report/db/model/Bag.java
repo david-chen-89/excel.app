@@ -1,4 +1,4 @@
-package excel.app.db.model;
+package shipment.report.db.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -7,8 +7,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "fastway_bags")
 public class Bag {
-	private String sku;
 	@Id
+	private String sku;
 	private String barcode;
 	private String location;
 	private String bag;

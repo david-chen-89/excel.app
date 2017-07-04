@@ -1,4 +1,4 @@
-package excel.app.web;
+package shipment.report.web;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -22,10 +22,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import excel.app.db.DbService;
-import excel.app.db.model.Bag;
-import excel.app.db.model.TradeMe;
-import excel.app.original.Constants;
+import shipment.report.db.DbService;
+import shipment.report.db.model.Bag;
+import shipment.report.db.model.TradeMe;
+import shipment.report.original.Constants;
 
 @Controller
 public class AdminController {
@@ -43,6 +43,7 @@ public class AdminController {
 			return REDIRECT_ADMIN;
 		}
 
+		logger.info(file.getName() + " uploaded.");
 		Reader in;
 		Iterable<CSVRecord> records;
 		try {
@@ -50,13 +51,15 @@ public class AdminController {
 			records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(in);
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute("message", e.getMessage());
-			logger.warn("failed to parse csv file: " + file.getName(), e);
+			logger.warn("Failed to parse csv file: " + file.getName(), e);
 			return REDIRECT_ADMIN;
 		}
-		ArrayList<TradeMe> inventories = new ArrayList<>();
+		ArrayList<TradeMe> inventories = new ArrayList<TradeMe>();
 		for (CSVRecord record : records) {
 			TradeMe data = parseTradeMe(record);
-			inventories.add(data);
+			if (!data.getProductCode().equalsIgnoreCase("SHIP")) {
+				inventories.add(data);
+			}
 		}
 		try {
 			if (clear) {
@@ -66,7 +69,7 @@ public class AdminController {
 			}
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute("message", e.getMessage());
-			logger.warn("failed to update H2: " + file.getName(), e);
+			logger.warn("Failed to update H2: " + file.getName(), e);
 			return REDIRECT_ADMIN;
 		}
 		redirectAttributes.addFlashAttribute("message", "Table updated!");
@@ -80,6 +83,7 @@ public class AdminController {
 			return REDIRECT_ADMIN;
 		}
 
+		logger.info(file.getName() + " uploaded.");
 		Reader in;
 		Iterable<CSVRecord> records;
 		try {
@@ -90,7 +94,7 @@ public class AdminController {
 			logger.warn("failed to parse csv file: " + file.getName(), e);
 			return REDIRECT_ADMIN;
 		}
-		ArrayList<Bag> bags = new ArrayList<>();
+		ArrayList<Bag> bags = new ArrayList<Bag>();
 		for (CSVRecord record : records) {
 			Bag data = parseBag(record);
 			bags.add(data);
@@ -103,7 +107,7 @@ public class AdminController {
 			}
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute("message", e.getMessage());
-			logger.warn("failed to update H2: " + file.getName(), e);
+			logger.warn("Failed to update H2: " + file.getName(), e);
 			return REDIRECT_ADMIN;
 		}
 		redirectAttributes.addFlashAttribute("message", "Table updated!");
@@ -116,7 +120,7 @@ public class AdminController {
 			dbService.removeTradeMe(customerReference);
 			redirectAttributes.addFlashAttribute("message", "Record removed!");
 		} catch (Exception e) {
-			logger.warn("fail to remove record", e);
+			logger.warn("Fail to remove record", e);
 			redirectAttributes.addFlashAttribute("message", e.getMessage());
 		}
 		return REDIRECT_ADMIN;
@@ -125,10 +129,10 @@ public class AdminController {
 	@PostMapping("/remove/tab2")
 	public String tab2Remove(@RequestParam("sku") String sku, RedirectAttributes redirectAttributes) {
 		try {
-			dbService.removeTradeMe(sku);
+			dbService.removeBag(sku);
 			redirectAttributes.addFlashAttribute("message", "Record removed!");
 		} catch (Exception e) {
-			logger.warn("fail to remove record", e);
+			logger.warn("Fail to remove record", e);
 			redirectAttributes.addFlashAttribute("message", e.getMessage());
 		}
 		return REDIRECT_ADMIN;
@@ -153,8 +157,7 @@ public class AdminController {
 
 	private CSVFormat setCsvHeader(String table) {
 		CSVFormat csvFileFormat = null;
-		switch (table) {
-		case "tab1":
+		if ("tab1".equalsIgnoreCase(table)) {
 			csvFileFormat = CSVFormat.DEFAULT.withHeader(new String[] { Constants.TAB1.SHIPMENT_NUMBER, Constants.TAB1.Status, Constants.TAB1.Warehouse_Code,
 					Constants.TAB1.Requested_Shipping_Date_SO, Constants.TAB1.Shipment_Method, Constants.TAB1.Shipped_With, Constants.TAB1.Tracking_Reference,
 					Constants.TAB1.Tracking_Reference_RD, Constants.TAB1.Customer, Constants.TAB1.Customer_Reference, Constants.TAB1.Customer_Email,
@@ -164,26 +167,22 @@ public class AdminController {
 					Constants.TAB1.Product_Private_Notes, Constants.TAB1.Qty_Requested, Constants.TAB1.Qty_Packed, Constants.TAB1.Qty_Backorder,
 					Constants.TAB1.Unit_Price_Inc_Tax, Constants.TAB1.Line_Total_Inc_Tax, Constants.TAB1.Notes, Constants.TAB1.Order_Notes_Public,
 					Constants.TAB1.Actual_Shipping_Date_Shipment, Constants.TAB1.Shipped_By });
-			break;
-		case "tab2":
+		} else if ("tab2".equalsIgnoreCase(table)) {
 			csvFileFormat = CSVFormat.DEFAULT.withHeader(new String[] { Constants.FASTWAY_BAGS_GD.SKU, Constants.FASTWAY_BAGS_GD.Barcode,
 					Constants.FASTWAY_BAGS_GD.Location, Constants.FASTWAY_BAGS_GD.Bag, Constants.FASTWAY_BAGS_GD.Description });
-			break;
-		case "tab3":
+		} else if ("tab3".equalsIgnoreCase(table)) {
 			csvFileFormat = CSVFormat.DEFAULT.withHeader(new String[] { Constants.TAB3.Reference, Constants.TAB3.Contact_Name,
 					Constants.TAB3.Company_Name_Required, Constants.TAB3.Address1_Required, Constants.TAB3.Address2, Constants.TAB3.Suburb_Required,
 					Constants.TAB3.City, Constants.TAB3.Post_Code_required, Constants.TAB3.Email_Address, Constants.TAB3.Phone_Number, Constants.TAB3.Special1,
 					Constants.TAB3.Special2, Constants.TAB3.Special3, Constants.TAB3.Packaging, Constants.TAB3.Weight, Constants.TAB3.Count_Quantity,
 					Constants.TAB3.Packaging_types });
-			break;
 		}
 		return csvFileFormat;
 	}
 
 	private List<String[]> setCvsValues(String table) {
-		List<String[]> values = new ArrayList<>();
-		switch (table) {
-		case "tab1":
+		List<String[]> values = new ArrayList<String[]>();
+		if ("tab1".equalsIgnoreCase(table)) {
 			List<TradeMe> tradeMes = dbService.getAllTradeMe();
 			for (TradeMe tradeMe : tradeMes) {
 				values.add(new String[] { tradeMe.getShipmentNumber(), tradeMe.getStatus(), tradeMe.getWarehouseCode(), tradeMe.getRequestedShippingDateSO(),
@@ -195,16 +194,24 @@ public class AdminController {
 						tradeMe.getQtyBackorder(), tradeMe.getUnitPriceIncTax(), tradeMe.getLineTotalIncTax(), tradeMe.getNotes(),
 						tradeMe.getOrderNotesPublic(), tradeMe.getActualShippingDateShipment(), tradeMe.getShippedBy(), });
 			}
-			break;
-		case "tab2":
+		} else if ("tab2".equalsIgnoreCase(table)) {
 			List<Bag> bags = dbService.getAllBag();
 			for (Bag bag : bags) {
-				values.add(new String[] { bag.getSku(), bag.getBarcode(), bag.getLocation(), bag.getBag(), bag.getDescription(), });
+				values.add(new String[] { bag.getSku(), bag.getBarcode(), bag.getLocation(), bag.getBag(), bag.getDescription() });
 			}
-			break;
-		case "tab3":
-			//TODO
-			break;
+		} else if ("tab3".equalsIgnoreCase(table)) {
+			List<Object[]> fastWays = dbService.getAllFastWay();
+			for (Object[] fastWay : fastWays) {
+				String[] data = new String[fastWay.length];
+				for (int i = 0; i < fastWay.length; i++) {
+					data[i] = (String) fastWay[i];
+				}
+				values.add(data);
+				//				values.add(new String[] { fastWay.getReference(), fastWay.getContactName(), fastWay.getCompanyNameRequired(), fastWay.getAddress1(),
+				//						fastWay.getAddress2(), fastWay.getSuburb(), fastWay.getCity(), fastWay.getPostCoderequired(), fastWay.getEmailAddress(),
+				//						fastWay.getPhoneNumber(), fastWay.getSpecial1(), fastWay.getSpecial2(), fastWay.getSpecial3(), fastWay.getPackaging(),
+				//						fastWay.getWeight(), fastWay.getCountQuantity(), fastWay.getPackagingtypes(), });
+			}
 		}
 		return values;
 	}

@@ -1,4 +1,4 @@
-package excel.app.web;
+package shipment.report.web;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,10 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import excel.app.Constants;
-import excel.app.db.DbService;
-import excel.app.db.model.Bag;
-import excel.app.db.model.TradeMe;
+import shipment.report.Constants;
+import shipment.report.db.DbService;
+import shipment.report.db.model.Bag;
+import shipment.report.db.model.TradeMe;
 
 @Controller
 public class BaseController {
@@ -43,14 +43,23 @@ public class BaseController {
 		model.put("columns", columns);
 
 		ArrayList<String[]> data = new ArrayList<String[]>();
-		data.add(new String[] { "G147330617-1", "", "Chantelle Ensor ", "55 Landscape Rd", "", "Papatoetoe", "Auckland", "2025", "bajan.kiwis@gmail.com", "",
-				"LA00192_____A00192", "1__________6.89", "TOSHIBA 19V4.74A 5.5*2.5  Laptop Charger", "9", "1", "1", "" });
-		data.add(new String[] { "G148740112-1", "black'", "Lisa Strickett ", "6 Cypress Place", "", "Owhata", "Rotorua", "3010", "blkhrt@clear.net.nz", "",
-				"LE00014_____E00014", "2__________5.83", "XBOX 360 battery + small pin Cable  white_", "9", "1", "1", "" });
-		data.add(new String[] { "G148949418", "", "Connor Hanley ", "30 Ben Lomond Crescent", "", "Pakuranga", "Auckland", "2010", "iconx23x@gmail.com", "",
-				"LH00072_____H00072", "1__________6.89", "Ethernet Switch 5 Ports + adapter", "6", "1", "1", "1" });
-		data.add(new String[] { "G149092553", "", "Dre Edwards ", "25A Rautawhiri Street", "", "Helensville", "Helensville", "800", "dreedwards7@gmail.com",
-				"", "LM00011_____M00011", "1__________7.89", "Puppy Pet Training Potty Grass Tray Toilet", "1", "1", "1", "1" });
+		List<Object[]> fastWays = dbService.getAllFastWay();
+		for (Object[] fastWay : fastWays) {
+			String[] values = new String[fastWay.length];
+			for (int i = 0; i < fastWay.length; i++) {
+				values[i] = (String) fastWay[i];
+			}
+			data.add(values);
+		}
+
+		//		data.add(new String[] { "G147330617-1", "", "Chantelle Ensor ", "55 Landscape Rd", "", "Papatoetoe", "Auckland", "2025", "bajan.kiwis@gmail.com", "",
+		//				"LA00192_____A00192", "1__________6.89", "TOSHIBA 19V4.74A 5.5*2.5  Laptop Charger", "9", "1", "1", "" });
+		//		data.add(new String[] { "G148740112-1", "black'", "Lisa Strickett ", "6 Cypress Place", "", "Owhata", "Rotorua", "3010", "blkhrt@clear.net.nz", "",
+		//				"LE00014_____E00014", "2__________5.83", "XBOX 360 battery + small pin Cable  white_", "9", "1", "1", "" });
+		//		data.add(new String[] { "G148949418", "", "Connor Hanley ", "30 Ben Lomond Crescent", "", "Pakuranga", "Auckland", "2010", "iconx23x@gmail.com", "",
+		//				"LH00072_____H00072", "1__________6.89", "Ethernet Switch 5 Ports + adapter", "6", "1", "1", "1" });
+		//		data.add(new String[] { "G149092553", "", "Dre Edwards ", "25A Rautawhiri Street", "", "Helensville", "Helensville", "800", "dreedwards7@gmail.com",
+		//				"", "LM00011_____M00011", "1__________7.89", "Puppy Pet Training Potty Grass Tray Toilet", "1", "1", "1", "1" });
 		model.put("data", data);
 		return "index";
 	}

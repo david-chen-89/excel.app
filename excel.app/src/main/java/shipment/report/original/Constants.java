@@ -1,4 +1,4 @@
-package excel.app.original;
+package shipment.report.original;
 
 public final class Constants {
 

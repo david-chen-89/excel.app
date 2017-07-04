@@ -1,4 +1,4 @@
-package excel.app.db.model;
+package shipment.report.db.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

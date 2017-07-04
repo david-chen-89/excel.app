@@ -10,8 +10,7 @@
 <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css" />
 <!-- <link rel="stylesheet" type="text/css" href="css/non-responsive.css" /> -->
 <script type="text/javascript" charset="utf8" src="js/jquery.js"></script>
-<script type="text/javascript" charset="utf8"
-	src="js/jquery.dataTables.js"></script>
+<script type="text/javascript" charset="utf8" src="js/jquery.dataTables.js"></script>
 
 <script type="text/javascript" th:inline="javascript">
 /*<![CDATA[*/
@@ -23,20 +22,54 @@
         	  cols.push(col);
         	}
            $(document).ready(function() {
-               $('#tab').DataTable( {
+               var table = $('#tab').DataTable( {
                    data: dataSet,
                    "order": [],
+                   "bDestroy":true,
                    columns: cols,
                } );
+               
+               $('.cb').on( 'click', function (e) {
+                   //e.preventDefault();
+            
+                   // Get the column API object
+                   var column = table.column( $(this).val());
+                   // Toggle the visibility
+                   column.visible($(this).is(":checked"));
+                   $('#tab').width("100%");
+               } );
            } );
-           /*]]>*/
+ 	/*]]>*/
+</script>
+<script type="text/javascript">
+function toggle(){
+  	var img = $('#toggle');
+  	var option = $('#option');
+ 	 if(option.is(':visible')){
+ 		option.hide();
+ 		img.attr('src', '/images/sort_desc_disabled.png');
+ 	 }else{
+ 		option.show();
+ 		img.attr('src', '/images/sort_asc_disabled.png');
+ 		
+ 	 }
+  }
 </script>
 </head>
 
 <body>
 	<div th:replace="fragment/header :: header"></div>
-	<div  style="margin-top: 70px">
-		<table id="tab" class="display" ></table>
+	<div style="margin-top: 55px">
+		<div>
+			<a href="javascript:toggle()"><img src="/images/sort_desc_disabled.png" id="toggle" /></a>
+			<div id='option' style="display: none">
+				<span th:each="column, iter :${columns}"> <label> <input type="checkbox" class="cb" checked="checked" th:value="${iter.index}" /> <small
+						style="font-weight: normal" th:text="${column}">column</small>
+				</label>
+				</span>
+			</div>
+		</div>
+		<table id="tab" class="display"></table>
 	</div>
 	<!-- /container -->
 

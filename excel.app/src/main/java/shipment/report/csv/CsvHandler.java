@@ -1,4 +1,4 @@
-package excel.app.csv;
+package shipment.report.csv;
 
 public class CsvHandler {
 
