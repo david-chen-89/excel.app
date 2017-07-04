@@ -7,6 +7,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "TradeMe")
 public class TradeMe {
+	@Id
 	private String shipmentNumber;
 	private String status;
 	private String warehouseCode;
@@ -16,7 +17,6 @@ public class TradeMe {
 	private String trackingReference;
 	private String trackingReferenceRD;
 	private String customer;
-	@Id
 	private String customerReference;
 	private String customerEmail;
 	private String phoneNumber;

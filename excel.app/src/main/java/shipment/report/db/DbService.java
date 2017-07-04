@@ -64,8 +64,8 @@ public class DbService {
 		addOrUpdateTradeMes(tradeMes);
 	}
 
-	public void removeTradeMe(String customerReference) {
-		tradeMeDao.remove(customerReference);
+	public void removeTradeMe(String shipmentNumber) {
+		tradeMeDao.remove(shipmentNumber);
 	}
 
 	//FastWay

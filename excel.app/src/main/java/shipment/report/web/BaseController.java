@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +17,7 @@ import shipment.report.db.model.TradeMe;
 
 @Controller
 public class BaseController {
+	private static Log logger = LogFactory.getLog(BaseController.class);
 
 	@Autowired
 	DbService dbService;
@@ -42,25 +45,22 @@ public class BaseController {
 		columns.add(Constants.TAB3.Packaging_types);
 		model.put("columns", columns);
 
-		ArrayList<String[]> data = new ArrayList<String[]>();
-		List<Object[]> fastWays = dbService.getAllFastWay();
-		for (Object[] fastWay : fastWays) {
-			String[] values = new String[fastWay.length];
-			for (int i = 0; i < fastWay.length; i++) {
-				values[i] = (String) fastWay[i];
+		try {
+			ArrayList<String[]> data = new ArrayList<String[]>();
+			List<Object[]> fastWays = dbService.getAllFastWay();
+			for (Object[] fastWay : fastWays) {
+				String[] values = new String[fastWay.length];
+				for (int i = 0; i < fastWay.length; i++) {
+					values[i] = (String) fastWay[i];
+				}
+				data.add(values);
+				model.put("data", data);
 			}
-			data.add(values);
+		} catch (RuntimeException e) {
+			logger.error(e.getMessage());
+			throw e;
 		}
 
-		//		data.add(new String[] { "G147330617-1", "", "Chantelle Ensor ", "55 Landscape Rd", "", "Papatoetoe", "Auckland", "2025", "bajan.kiwis@gmail.com", "",
-		//				"LA00192_____A00192", "1__________6.89", "TOSHIBA 19V4.74A 5.5*2.5  Laptop Charger", "9", "1", "1", "" });
-		//		data.add(new String[] { "G148740112-1", "black'", "Lisa Strickett ", "6 Cypress Place", "", "Owhata", "Rotorua", "3010", "blkhrt@clear.net.nz", "",
-		//				"LE00014_____E00014", "2__________5.83", "XBOX 360 battery + small pin Cable  white_", "9", "1", "1", "" });
-		//		data.add(new String[] { "G148949418", "", "Connor Hanley ", "30 Ben Lomond Crescent", "", "Pakuranga", "Auckland", "2010", "iconx23x@gmail.com", "",
-		//				"LH00072_____H00072", "1__________6.89", "Ethernet Switch 5 Ports + adapter", "6", "1", "1", "1" });
-		//		data.add(new String[] { "G149092553", "", "Dre Edwards ", "25A Rautawhiri Street", "", "Helensville", "Helensville", "800", "dreedwards7@gmail.com",
-		//				"", "LM00011_____M00011", "1__________7.89", "Puppy Pet Training Potty Grass Tray Toilet", "1", "1", "1", "1" });
-		model.put("data", data);
 		return "index";
 	}
 
@@ -104,20 +104,25 @@ public class BaseController {
 		columns.add(Constants.TAB1.Shipped_By);
 		model.put("columns", columns);
 
-		ArrayList<String[]> data = new ArrayList<String[]>();
-		List<TradeMe> inventories = dbService.getAllTradeMe();
-		for (TradeMe inventory : inventories) {
-			data.add(new String[] { inventory.getShipmentNumber(), inventory.getStatus(), inventory.getWarehouseCode(), inventory.getRequestedShippingDateSO(),
-					inventory.getShipmentMethod(), inventory.getShippedWith(), inventory.getTrackingReference(), inventory.getTrackingReferenceRD(),
-					inventory.getCustomer(), inventory.getCustomerReference(), inventory.getCustomerEmail(), inventory.getPhoneNumber(),
-					inventory.getAddress1(), inventory.getAddress2(), inventory.getAddress3(), inventory.getTownCity(), inventory.getPostCode(),
-					inventory.getCountry(), inventory.getRegionState(), inventory.getProductCode(), inventory.getProductAlternateCode(),
-					inventory.getProductName(), inventory.getUOM(), inventory.getProductPublicNotes(), inventory.getProductPrivateNotes(),
-					inventory.getQtyRequested(), inventory.getQtyPacked(), inventory.getQtyBackorder(), inventory.getUnitPriceIncTax(),
-					inventory.getLineTotalIncTax(), inventory.getNotes(), inventory.getOrderNotesPublic(), inventory.getActualShippingDateShipment(),
-					inventory.getShippedBy() });
+		try {
+			ArrayList<String[]> data = new ArrayList<String[]>();
+			List<TradeMe> inventories = dbService.getAllTradeMe();
+			for (TradeMe inventory : inventories) {
+				data.add(new String[] { inventory.getShipmentNumber(), inventory.getStatus(), inventory.getWarehouseCode(),
+						inventory.getRequestedShippingDateSO(), inventory.getShipmentMethod(), inventory.getShippedWith(), inventory.getTrackingReference(),
+						inventory.getTrackingReferenceRD(), inventory.getCustomer(), inventory.getCustomerReference(), inventory.getCustomerEmail(),
+						inventory.getPhoneNumber(), inventory.getAddress1(), inventory.getAddress2(), inventory.getAddress3(), inventory.getTownCity(),
+						inventory.getPostCode(), inventory.getCountry(), inventory.getRegionState(), inventory.getProductCode(),
+						inventory.getProductAlternateCode(), inventory.getProductName(), inventory.getUOM(), inventory.getProductPublicNotes(),
+						inventory.getProductPrivateNotes(), inventory.getQtyRequested(), inventory.getQtyPacked(), inventory.getQtyBackorder(),
+						inventory.getUnitPriceIncTax(), inventory.getLineTotalIncTax(), inventory.getNotes(), inventory.getOrderNotesPublic(),
+						inventory.getActualShippingDateShipment(), inventory.getShippedBy() });
+			}
+			model.put("data", data);
+		} catch (RuntimeException e) {
+			logger.error(e.getMessage());
+			throw e;
 		}
-		model.put("data", data);
 		return "index";
 	}
 
@@ -132,12 +137,17 @@ public class BaseController {
 		columns.add(Constants.FASTWAY_BAGS_GD.Description);
 		model.put("columns", columns);
 
-		ArrayList<String[]> data = new ArrayList<String[]>();
-		List<Bag> fastways = dbService.getAllBag();
-		for (Bag fastway : fastways) {
-			data.add(new String[] { fastway.getSku(), fastway.getBarcode(), fastway.getLocation(), fastway.getBag(), fastway.getDescription() });
+		try {
+			ArrayList<String[]> data = new ArrayList<String[]>();
+			List<Bag> fastways = dbService.getAllBag();
+			for (Bag fastway : fastways) {
+				data.add(new String[] { fastway.getSku(), fastway.getBarcode(), fastway.getLocation(), fastway.getBag(), fastway.getDescription() });
+			}
+			model.put("data", data);
+		} catch (RuntimeException e) {
+			logger.error(e.getMessage());
+			throw e;
 		}
-		model.put("data", data);
 		return "index";
 	}
 
@@ -146,9 +156,4 @@ public class BaseController {
 		model.put("active", "admin");
 		return "admin";
 	}
-
-	//	@GetMapping("/error")
-	//	public String error(Map<String, Object> model) {
-	//		return "error";
-	//	}
 }

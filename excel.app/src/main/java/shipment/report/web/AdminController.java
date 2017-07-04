@@ -3,9 +3,13 @@ package shipment.report.web;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.csv.CSVFormat;
@@ -30,20 +34,23 @@ import shipment.report.original.Constants;
 @Controller
 public class AdminController {
 	private static Log logger = LogFactory.getLog(AdminController.class);
-
 	private static final String REDIRECT_ADMIN = "redirect:/admin";
+
+	private DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd");
 
 	@Autowired
 	DbService dbService;
 
 	@PostMapping("/load/tab1")
-	public String tab1Upload(@RequestParam("file") MultipartFile file, @RequestParam("clear") boolean clear, RedirectAttributes redirectAttributes) {
+	public String tradeMeUpload(@RequestParam("file") MultipartFile file, @RequestParam("clear") boolean clear, HttpServletRequest request,
+			RedirectAttributes redirectAttributes) {
 		if (file.isEmpty()) {
+			logger.warn(file.getOriginalFilename() + " is empty.");
 			redirectAttributes.addFlashAttribute("message", "Please select a file to upload.");
 			return REDIRECT_ADMIN;
 		}
 
-		logger.info(file.getName() + " uploaded.");
+		logger.info(file.getOriginalFilename() + " uploaded from " + request.getRemoteAddr() + ".");
 		Reader in;
 		Iterable<CSVRecord> records;
 		try {
@@ -51,7 +58,7 @@ public class AdminController {
 			records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(in);
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute("message", e.getMessage());
-			logger.warn("Failed to parse csv file: " + file.getName(), e);
+			logger.warn("Failed to parse csv file: " + file.getOriginalFilename(), e);
 			return REDIRECT_ADMIN;
 		}
 		ArrayList<TradeMe> inventories = new ArrayList<TradeMe>();
@@ -69,7 +76,7 @@ public class AdminController {
 			}
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute("message", e.getMessage());
-			logger.warn("Failed to update H2: " + file.getName(), e);
+			logger.warn("Failed to update H2: " + file.getOriginalFilename(), e);
 			return REDIRECT_ADMIN;
 		}
 		redirectAttributes.addFlashAttribute("message", "Table updated!");
@@ -77,13 +84,15 @@ public class AdminController {
 	}
 
 	@PostMapping("/load/tab2")
-	public String tab2Upload(@RequestParam("file") MultipartFile file, @RequestParam("clear") boolean clear, RedirectAttributes redirectAttributes) {
+	public String bagUpload(@RequestParam("file") MultipartFile file, @RequestParam("clear") boolean clear, HttpServletRequest request,
+			RedirectAttributes redirectAttributes) {
 		if (file.isEmpty()) {
+			logger.warn(file.getOriginalFilename() + " is empty.");
 			redirectAttributes.addFlashAttribute("message", "Please select a file to upload.");
 			return REDIRECT_ADMIN;
 		}
 
-		logger.info(file.getName() + " uploaded.");
+		logger.info(file.getOriginalFilename() + " uploaded from " + request.getRemoteAddr() + ".");
 		Reader in;
 		Iterable<CSVRecord> records;
 		try {
@@ -91,7 +100,7 @@ public class AdminController {
 			records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(in);
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute("message", e.getMessage());
-			logger.warn("failed to parse csv file: " + file.getName(), e);
+			logger.warn("failed to parse csv file: " + file.getOriginalFilename(), e);
 			return REDIRECT_ADMIN;
 		}
 		ArrayList<Bag> bags = new ArrayList<Bag>();
@@ -107,7 +116,7 @@ public class AdminController {
 			}
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute("message", e.getMessage());
-			logger.warn("Failed to update H2: " + file.getName(), e);
+			logger.warn("Failed to update H2: " + file.getOriginalFilename(), e);
 			return REDIRECT_ADMIN;
 		}
 		redirectAttributes.addFlashAttribute("message", "Table updated!");
@@ -115,9 +124,10 @@ public class AdminController {
 	}
 
 	@PostMapping("/remove/tab1")
-	public String tab1Remove(@RequestParam("customerReference") String customerReference, RedirectAttributes redirectAttributes) {
+	public String tradeMeRemove(@RequestParam("shipmentNumber") String shipmentNumber, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+		logger.info("Remove TradeMe recorder for Shipment Number " + shipmentNumber + " from " + request.getRemoteAddr() + ".");
 		try {
-			dbService.removeTradeMe(customerReference);
+			dbService.removeTradeMe(shipmentNumber);
 			redirectAttributes.addFlashAttribute("message", "Record removed!");
 		} catch (Exception e) {
 			logger.warn("Fail to remove record", e);
@@ -127,7 +137,8 @@ public class AdminController {
 	}
 
 	@PostMapping("/remove/tab2")
-	public String tab2Remove(@RequestParam("sku") String sku, RedirectAttributes redirectAttributes) {
+	public String bagRemove(@RequestParam("sku") String sku, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+		logger.info("Remove bag recorder for SKU" + sku + " from " + request.getRemoteAddr() + ".");
 		try {
 			dbService.removeBag(sku);
 			redirectAttributes.addFlashAttribute("message", "Record removed!");
@@ -141,7 +152,8 @@ public class AdminController {
 	@GetMapping("/download")
 	public @ResponseBody void downloadCsv(@RequestParam("table") String table, HttpServletResponse response) {
 		response.setContentType("application/octet-stream");
-		response.setHeader("Content-Disposition", "attachment; filename=" + table + ".csv");
+		String fileName = getFileName(table);
+		response.setHeader("Content-Disposition", "attachment; filename=" + fileName + ".csv");
 		try {
 			CSVFormat csvFileFormat = setCsvHeader(table);
 			Appendable ad = response.getWriter();
@@ -153,6 +165,19 @@ public class AdminController {
 			e.printStackTrace();
 			logger.error(e);
 		}
+	}
+
+	private String getFileName(String table) {
+		String fileName = "table";
+		String date = dateFormat.format(new Date());
+		if ("tab1".equals(table)) {
+			fileName = "trademe_shipment_" + date;
+		} else if ("tab2".equals(table)) {
+			fileName = "fastway_bag_" + date;
+		} else if ("tab3".equals(table)) {
+			fileName = "fastway_shipment_" + date;
+		}
+		return fileName;
 	}
 
 	private CSVFormat setCsvHeader(String table) {
@@ -207,10 +232,6 @@ public class AdminController {
 					data[i] = (String) fastWay[i];
 				}
 				values.add(data);
-				//				values.add(new String[] { fastWay.getReference(), fastWay.getContactName(), fastWay.getCompanyNameRequired(), fastWay.getAddress1(),
-				//						fastWay.getAddress2(), fastWay.getSuburb(), fastWay.getCity(), fastWay.getPostCoderequired(), fastWay.getEmailAddress(),
-				//						fastWay.getPhoneNumber(), fastWay.getSpecial1(), fastWay.getSpecial2(), fastWay.getSpecial3(), fastWay.getPackaging(),
-				//						fastWay.getWeight(), fastWay.getCountQuantity(), fastWay.getPackagingtypes(), });
 			}
 		}
 		return values;

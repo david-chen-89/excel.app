@@ -3,25 +3,32 @@ Table 2: FastWay Bag
 Table 3: Fastway Shipment
 
 Table 3 Query:
-SELECT t.CUSTOMER_REFERENCE AS Reference,
-       t.ORDER_NOTES_PUBLIC,
-       t. CUSTOMER,
-       t.ADDRESS1,
-       t.ADDRESS2,
-       t.ADDRESS3,
-       t.TOWN_CITY,
-       t.POST_CODE,
-       t.CUSTOMER_EMAIL,
-       t.PHONE_NUMBER,
-       CONCAT(f.BARCODE, '_____', f.LOCATION) AS BARCODE_LOCATION,
-       CONCAT(t.QTY_REQUESTED, '_____', t.UNIT_PRICE_INC_TAX) AS QTY_AND_UNIT_PRICE_INC,
-       t.PRODUCT_NAME,
-       f.BAG,
-       t.PRODUCT_ALTERNATE_CODE,
-       '1' AS QTY_REQUESTED,
-       t.LINE_TOTAL_INC_TAX,
-       t.NOTES,
-       f.BARCODE
-FROM TRADE_ME t,
-     FASTWAY_BAGS f
-WHERE t.PRODUCT_ALTERNATE_CODE = f.SKU
+SELECT
+  t.customer_reference AS Reference,
+  t.order_notes_public,
+  t.customer,
+  t.address1,
+  t.address2,
+  t.address3,
+  t.town_city,
+  t.post_code,
+  t.customer_email,
+  t.phone_number,
+  CASE
+    WHEN f.barcode IS NOT NULL THEN Concat(f.barcode, '_____', f.location)
+    ELSE ''
+  END AS BARCODE_LOCATION,
+  CASE
+    WHEN t.qty_requested IS NOT NULL THEN Concat(t.qty_requested, '_____', t.unit_price_inc_tax)
+    ELSE ''
+  END AS QTY_AND_UNIT_PRICE_INC,
+  t.product_name,
+  f.bag,
+  t.product_alternate_code,
+  '1' AS QTY_REQUESTED,
+  t.line_total_inc_tax,
+  t.notes,
+  f.barcode
+FROM trade_me t
+LEFT JOIN fastway_bags f
+  ON t.product_alternate_code = f.sku

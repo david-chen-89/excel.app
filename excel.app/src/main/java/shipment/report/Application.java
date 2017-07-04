@@ -13,10 +13,8 @@ import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.reflect.Field;
 import java.net.Inet4Address;
 import java.net.URI;
-import java.nio.charset.Charset;
 
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -60,14 +58,14 @@ public class Application {
 			showSplash();
 			startSpring(args);
 			showTray();
-			try {
-				System.setProperty("file.encoding", "UTF-8");
-				Field charset = Charset.class.getDeclaredField("defaultCharset");
-				charset.setAccessible(true);
-				charset.set(null, null);
-			} catch (Exception e) {
-				logger.error(e);
-			}
+			//			try {
+			//				System.setProperty("file.encoding", "UTF-8");
+			//								Field charset = Charset.class.getDeclaredField("defaultCharset");
+			//								charset.setAccessible(true);
+			//								charset.set(null, null);
+			//			} catch (Exception e) {
+			//				logger.error(e);
+			//			}
 			if (splash != null) {
 				splash.close();
 			}
