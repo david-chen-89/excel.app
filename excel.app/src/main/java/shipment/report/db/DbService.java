@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import shipment.report.db.model.Bag;
 import shipment.report.db.model.TradeMe;
+import shipment.report.db.model.TradeMeId;
 
 @Transactional
 @Service
@@ -64,8 +65,11 @@ public class DbService {
 		addOrUpdateTradeMes(tradeMes);
 	}
 
-	public void removeTradeMe(String shipmentNumber) {
-		tradeMeDao.remove(shipmentNumber);
+	public void removeTradeMe(String shipmentNumber, String productCode) {
+		TradeMeId id = new TradeMeId();
+		id.setShipmentNumber(shipmentNumber);
+		id.setProductCode(productCode);
+		tradeMeDao.remove(id);
 	}
 
 	//FastWay

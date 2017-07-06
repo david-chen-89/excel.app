@@ -71,10 +71,10 @@ public final class Constants {
 	public final static String FastwayQuery = "SELECT t.CUSTOMER_REFERENCE AS REFERENCE, " + "t.ORDER_NOTES_PUBLIC AS CONTACT_NAME, "
 			+ "t. CUSTOMER as COMPANY_NAME, " + "t.ADDRESS1, " + "t.ADDRESS2, " + "t.ADDRESS3 as SUBURB, " + "t.TOWN_CITY as CITY, " + "t.POST_CODE, "
 			+ "t.CUSTOMER_EMAIL as EMAIL_ADDRESS, " + "t.PHONE_NUMBER as PHONE, "
-			+ "CASE WHEN f.barcode IS NOT NULL THEN Concat(f.barcode, '_____', f.location) ELSE '' END AS SPECIAL1, "
+			+ "CASE WHEN f.barcode IS NOT NULL THEN Concat(f.location, '_____', f.barcode) ELSE '' END AS SPECIAL1, "
 			+ "CASE WHEN t.qty_requested IS NOT NULL THEN Concat(t.qty_requested, '_____', t.unit_price_inc_tax) ELSE '' END AS SPECIAL2, "
-			+ "t.PRODUCT_NAME as SPECIAL3, " + "f.BAG as PACKAGING, " + "'1' AS WEIGHT, " + "'1' AS QUANTITY, " + "'1' AS PACKAGING_TYPES "
-			+ "FROM TRADE_ME t LEFT JOIN FASTWAY_BAGS f " + "ON t.PRODUCT_ALTERNATE_CODE = f.SKU;";
+			+ "t.PRODUCT_NAME as SPECIAL3, " + "f.BAG as PACKAGING, " + "'1' AS WEIGHT, " + "'1' AS QUANTITY, " + "'1' AS PACKAGING_TYPES, "
+			+ " t.PRODUCT_ALTERNATE_CODE " + "FROM TRADE_ME t LEFT JOIN FASTWAY_BAGS f " + "ON t.PRODUCT_ALTERNATE_CODE = f.SKU;";
 
 	private Constants() {
 	}

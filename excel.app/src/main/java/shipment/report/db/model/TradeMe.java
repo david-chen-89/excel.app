@@ -1,10 +1,13 @@
 package shipment.report.db.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 
 @Entity
+@IdClass(TradeMeId.class)
 @Table(name = "TradeMe")
 public class TradeMe {
 	@Id
@@ -27,18 +30,20 @@ public class TradeMe {
 	private String postCode;
 	private String country;
 	private String regionState;
+	@Id
 	private String productCode;
 	private String productAlternateCode;
 	private String productName;
 	private String UOM;
 	private String productPublicNotes;
 	private String productPrivateNotes;
-	private String qtyRequested;
+	private int qtyRequested;
 	private String qtyPacked;
 	private String qtyBackorder;
 	private String unitPriceIncTax;
 	private String lineTotalIncTax;
 	private String notes;
+	@Column(columnDefinition = "varchar(500)")
 	private String orderNotesPublic;
 	private String actualShippingDateShipment;
 	private String shippedBy;
@@ -243,11 +248,11 @@ public class TradeMe {
 		this.productPrivateNotes = productPrivateNotes;
 	}
 
-	public String getQtyRequested() {
+	public int getQtyRequested() {
 		return qtyRequested;
 	}
 
-	public void setQtyRequested(String qtyRequested) {
+	public void setQtyRequested(int qtyRequested) {
 		this.qtyRequested = qtyRequested;
 	}
 

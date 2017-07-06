@@ -2,6 +2,9 @@ Table 1: TradeMe Shipment
 Table 2: FastWay Bag
 Table 3: Fastway Shipment
 
+bat to exe
+http://www.f2ko.de/en/ob2e.php
+
 Table 3 Query:
 SELECT
   t.customer_reference AS Reference,
@@ -15,7 +18,7 @@ SELECT
   t.customer_email,
   t.phone_number,
   CASE
-    WHEN f.barcode IS NOT NULL THEN Concat(f.barcode, '_____', f.location)
+    WHEN f.barcode IS NOT NULL THEN Concat(f.location, '_____', f.barcode)
     ELSE ''
   END AS BARCODE_LOCATION,
   CASE

@@ -61,18 +61,30 @@ public class AdminController {
 			logger.warn("Failed to parse csv file: " + file.getOriginalFilename(), e);
 			return REDIRECT_ADMIN;
 		}
-		ArrayList<TradeMe> inventories = new ArrayList<TradeMe>();
+		ArrayList<TradeMe> tradeMes = new ArrayList<TradeMe>();
+		ArrayList<TradeMe> tradeMeShips = new ArrayList<TradeMe>();
 		for (CSVRecord record : records) {
 			TradeMe data = parseTradeMe(record);
 			if (!data.getProductCode().equalsIgnoreCase("SHIP")) {
-				inventories.add(data);
+				tradeMes.add(data);
+			} else {
+				tradeMeShips.add(data);
+			}
+			for (TradeMe ship : tradeMeShips) {
+				for (TradeMe tradeMe : tradeMeShips) {
+					if (ship.getShipmentNumber() != null && ship.getProductCode() != null) {
+						if (ship.getShipmentNumber().equals(tradeMe.getShipmentNumber()) && ship.getProductCode().equals(tradeMe.getProductCode())) {
+							tradeMe.setUnitPriceIncTax(ship.getUnitPriceIncTax());
+						}
+					}
+				}
 			}
 		}
 		try {
 			if (clear) {
-				dbService.reloadTradeMe(inventories);
+				dbService.reloadTradeMe(tradeMes);
 			} else {
-				dbService.addOrUpdateTradeMes(inventories);
+				dbService.addOrUpdateTradeMes(tradeMes);
 			}
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute("message", e.getMessage());
@@ -124,10 +136,11 @@ public class AdminController {
 	}
 
 	@PostMapping("/remove/tab1")
-	public String tradeMeRemove(@RequestParam("shipmentNumber") String shipmentNumber, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+	public String tradeMeRemove(@RequestParam("shipmentNumber") String shipmentNumber, @RequestParam("productCode") String productCode,
+			HttpServletRequest request, RedirectAttributes redirectAttributes) {
 		logger.info("Remove TradeMe recorder for Shipment Number " + shipmentNumber + " from " + request.getRemoteAddr() + ".");
 		try {
-			dbService.removeTradeMe(shipmentNumber);
+			dbService.removeTradeMe(shipmentNumber, productCode);
 			redirectAttributes.addFlashAttribute("message", "Record removed!");
 		} catch (Exception e) {
 			logger.warn("Fail to remove record", e);
@@ -200,7 +213,7 @@ public class AdminController {
 					Constants.TAB3.Company_Name_Required, Constants.TAB3.Address1_Required, Constants.TAB3.Address2, Constants.TAB3.Suburb_Required,
 					Constants.TAB3.City, Constants.TAB3.Post_Code_required, Constants.TAB3.Email_Address, Constants.TAB3.Phone_Number, Constants.TAB3.Special1,
 					Constants.TAB3.Special2, Constants.TAB3.Special3, Constants.TAB3.Packaging, Constants.TAB3.Weight, Constants.TAB3.Count_Quantity,
-					Constants.TAB3.Packaging_types });
+					Constants.TAB3.Packaging_types, Constants.TAB3.SKU });
 		}
 		return csvFileFormat;
 	}
@@ -215,7 +228,7 @@ public class AdminController {
 						tradeMe.getCustomer(), tradeMe.getCustomerReference(), tradeMe.getCustomerEmail(), tradeMe.getPhoneNumber(), tradeMe.getAddress1(),
 						tradeMe.getAddress2(), tradeMe.getAddress3(), tradeMe.getTownCity(), tradeMe.getPostCode(), tradeMe.getCountry(),
 						tradeMe.getRegionState(), tradeMe.getProductCode(), tradeMe.getProductAlternateCode(), tradeMe.getProductName(), tradeMe.getUOM(),
-						tradeMe.getProductPublicNotes(), tradeMe.getProductPrivateNotes(), tradeMe.getQtyRequested(), tradeMe.getQtyPacked(),
+						tradeMe.getProductPublicNotes(), tradeMe.getProductPrivateNotes(), String.valueOf(tradeMe.getQtyRequested()), tradeMe.getQtyPacked(),
 						tradeMe.getQtyBackorder(), tradeMe.getUnitPriceIncTax(), tradeMe.getLineTotalIncTax(), tradeMe.getNotes(),
 						tradeMe.getOrderNotesPublic(), tradeMe.getActualShippingDateShipment(), tradeMe.getShippedBy(), });
 			}
@@ -274,7 +287,8 @@ public class AdminController {
 		tradeMe.setUOM(record.get(22));
 		tradeMe.setProductPublicNotes(record.get(23));
 		tradeMe.setProductPrivateNotes(record.get(24));
-		tradeMe.setQtyRequested(record.get(25));
+		double d = Double.parseDouble(record.get(25));
+		tradeMe.setQtyRequested((int) d);
 		tradeMe.setQtyPacked(record.get(26));
 		tradeMe.setQtyBackorder(record.get(27));
 		tradeMe.setUnitPriceIncTax(record.get(28));

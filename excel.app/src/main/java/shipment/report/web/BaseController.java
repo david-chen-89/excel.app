@@ -43,6 +43,7 @@ public class BaseController {
 		columns.add(Constants.TAB3.Weight);
 		columns.add(Constants.TAB3.Count_Quantity);
 		columns.add(Constants.TAB3.Packaging_types);
+		columns.add(Constants.FASTWAY_BAGS_GD.SKU);
 		model.put("columns", columns);
 
 		try {
@@ -106,17 +107,16 @@ public class BaseController {
 
 		try {
 			ArrayList<String[]> data = new ArrayList<String[]>();
-			List<TradeMe> inventories = dbService.getAllTradeMe();
-			for (TradeMe inventory : inventories) {
-				data.add(new String[] { inventory.getShipmentNumber(), inventory.getStatus(), inventory.getWarehouseCode(),
-						inventory.getRequestedShippingDateSO(), inventory.getShipmentMethod(), inventory.getShippedWith(), inventory.getTrackingReference(),
-						inventory.getTrackingReferenceRD(), inventory.getCustomer(), inventory.getCustomerReference(), inventory.getCustomerEmail(),
-						inventory.getPhoneNumber(), inventory.getAddress1(), inventory.getAddress2(), inventory.getAddress3(), inventory.getTownCity(),
-						inventory.getPostCode(), inventory.getCountry(), inventory.getRegionState(), inventory.getProductCode(),
-						inventory.getProductAlternateCode(), inventory.getProductName(), inventory.getUOM(), inventory.getProductPublicNotes(),
-						inventory.getProductPrivateNotes(), inventory.getQtyRequested(), inventory.getQtyPacked(), inventory.getQtyBackorder(),
-						inventory.getUnitPriceIncTax(), inventory.getLineTotalIncTax(), inventory.getNotes(), inventory.getOrderNotesPublic(),
-						inventory.getActualShippingDateShipment(), inventory.getShippedBy() });
+			List<TradeMe> tradeMes = dbService.getAllTradeMe();
+			for (TradeMe tradeMe : tradeMes) {
+				data.add(new String[] { tradeMe.getShipmentNumber(), tradeMe.getStatus(), tradeMe.getWarehouseCode(), tradeMe.getRequestedShippingDateSO(),
+						tradeMe.getShipmentMethod(), tradeMe.getShippedWith(), tradeMe.getTrackingReference(), tradeMe.getTrackingReferenceRD(),
+						tradeMe.getCustomer(), tradeMe.getCustomerReference(), tradeMe.getCustomerEmail(), tradeMe.getPhoneNumber(), tradeMe.getAddress1(),
+						tradeMe.getAddress2(), tradeMe.getAddress3(), tradeMe.getTownCity(), tradeMe.getPostCode(), tradeMe.getCountry(),
+						tradeMe.getRegionState(), tradeMe.getProductCode(), tradeMe.getProductAlternateCode(), tradeMe.getProductName(), tradeMe.getUOM(),
+						tradeMe.getProductPublicNotes(), tradeMe.getProductPrivateNotes(), String.valueOf(tradeMe.getQtyRequested()), tradeMe.getQtyPacked(),
+						tradeMe.getQtyBackorder(), tradeMe.getUnitPriceIncTax(), tradeMe.getLineTotalIncTax(), tradeMe.getNotes(),
+						tradeMe.getOrderNotesPublic(), tradeMe.getActualShippingDateShipment(), tradeMe.getShippedBy() });
 			}
 			model.put("data", data);
 		} catch (RuntimeException e) {
