@@ -70,12 +70,12 @@ public class AdminController {
 			} else {
 				tradeMeShips.add(data);
 			}
-			for (TradeMe ship : tradeMeShips) {
-				for (TradeMe tradeMe : tradeMeShips) {
-					if (ship.getShipmentNumber() != null && ship.getProductCode() != null) {
-						if (ship.getShipmentNumber().equals(tradeMe.getShipmentNumber()) && ship.getProductCode().equals(tradeMe.getProductCode())) {
-							tradeMe.setUnitPriceIncTax(ship.getUnitPriceIncTax());
-						}
+		}
+		for (TradeMe ship : tradeMeShips) {
+			for (TradeMe tradeMe : tradeMes) {
+				if (ship.getShipmentNumber() != null && ship.getProductCode() != null) {
+					if (ship.getShipmentNumber().equals(tradeMe.getShipmentNumber())) { //&& ship.getProductCode().equals(tradeMe.getProductCode())
+						tradeMe.setUnitPriceIncTax(ship.getUnitPriceIncTax());
 					}
 				}
 			}
