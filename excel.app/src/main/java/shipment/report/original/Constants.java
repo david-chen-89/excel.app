@@ -65,7 +65,9 @@ public final class Constants {
 		public static String Weight = "Weight";
 		public static String Count_Quantity = "Count/Quantity";
 		public static String Packaging_types = "Packaging types";
-		public static final String SKU = "SKU";
+		public static String SKU = "SKU";
+		public static String Qty_Requested = "Qty Requested";
+		public static String Unit_Price_Inc_Tax = "Unit Price Inc Tax";
 	}
 
 	private Constants() {

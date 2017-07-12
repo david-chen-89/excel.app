@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import shipment.report.Util;
 import shipment.report.db.DbService;
 import shipment.report.db.model.Bag;
 import shipment.report.db.model.TradeMe;
@@ -213,7 +214,7 @@ public class AdminController {
 					Constants.TAB3.Company_Name_Required, Constants.TAB3.Address1_Required, Constants.TAB3.Address2, Constants.TAB3.Suburb_Required,
 					Constants.TAB3.City, Constants.TAB3.Post_Code_required, Constants.TAB3.Email_Address, Constants.TAB3.Phone_Number, Constants.TAB3.Special1,
 					Constants.TAB3.Special2, Constants.TAB3.Special3, Constants.TAB3.Packaging, Constants.TAB3.Weight, Constants.TAB3.Count_Quantity,
-					Constants.TAB3.Packaging_types, Constants.TAB3.SKU });
+					Constants.TAB3.Packaging_types, Constants.TAB3.SKU, Constants.TAB3.Qty_Requested, Constants.TAB3.Unit_Price_Inc_Tax });
 		}
 		return csvFileFormat;
 	}
@@ -242,7 +243,14 @@ public class AdminController {
 			for (Object[] fastWay : fastWays) {
 				String[] data = new String[fastWay.length];
 				for (int i = 0; i < fastWay.length; i++) {
-					data[i] = (String) fastWay[i];
+					data[i] = String.valueOf(fastWay[i]);
+					if (i == 0) { // Reference
+						data[i] = Util.chgReference(data[i]);
+					} else if (i == 1) { //notes
+						data[i] = Util.chgNote(data[i]);
+					} else if (i == 6 && data[5].trim().isEmpty()) {
+						data[5] = data[6];
+					}
 				}
 				values.add(data);
 			}

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import shipment.report.Constants;
+import shipment.report.Util;
 import shipment.report.db.DbService;
 import shipment.report.db.model.Bag;
 import shipment.report.db.model.TradeMe;
@@ -43,7 +44,9 @@ public class BaseController {
 		columns.add(Constants.TAB3.Weight);
 		columns.add(Constants.TAB3.Count_Quantity);
 		columns.add(Constants.TAB3.Packaging_types);
-		columns.add(Constants.FASTWAY_BAGS_GD.SKU);
+		columns.add(Constants.TAB3.SKU);
+		columns.add(Constants.TAB3.Qty_Requested);
+		columns.add(Constants.TAB3.Unit_Price_Inc_Tax);
 		model.put("columns", columns);
 
 		try {
@@ -52,7 +55,14 @@ public class BaseController {
 			for (Object[] fastWay : fastWays) {
 				String[] values = new String[fastWay.length];
 				for (int i = 0; i < fastWay.length; i++) {
-					values[i] = (String) fastWay[i];
+					values[i] = String.valueOf(fastWay[i]);
+					if (i == 0) { // Reference
+						values[i] = Util.chgReference(values[i]);
+					} else if (i == 1) { //notes
+						values[i] = Util.chgNote(values[i]);
+					} else if (i == 6 && values[5].trim().isEmpty()) {
+						values[5] = values[6];
+					}
 				}
 				data.add(values);
 				model.put("data", data);
