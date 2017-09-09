@@ -145,13 +145,15 @@ public class BaseController {
 		columns.add(Constants.FASTWAY_BAGS_GD.Location);
 		columns.add(Constants.FASTWAY_BAGS_GD.Bag);
 		columns.add(Constants.FASTWAY_BAGS_GD.Description);
+		columns.add(Constants.FASTWAY_BAGS_GD.Quantity);
 		model.put("columns", columns);
 
 		try {
 			ArrayList<String[]> data = new ArrayList<String[]>();
-			List<Bag> fastways = dbService.getAllBag();
-			for (Bag fastway : fastways) {
-				data.add(new String[] { fastway.getSku(), fastway.getBarcode(), fastway.getLocation(), fastway.getBag(), fastway.getDescription() });
+			List<Bag> bags = dbService.getAllBag();
+			for (Bag bag : bags) {
+				data.add(new String[] { bag.getSku(), bag.getBarcode(), bag.getLocation(), bag.getBag(), bag.getDescription(),
+						Integer.toString(bag.getQuantity()) });
 			}
 			model.put("data", data);
 		} catch (RuntimeException e) {

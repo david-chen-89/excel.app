@@ -96,6 +96,10 @@ public class AdminController {
 		return REDIRECT_ADMIN;
 	}
 
+	/**
+	 * @param file upload file
+	 * @param clear remove previous data
+	 */
 	@PostMapping("/load/tab2")
 	public String bagUpload(@RequestParam("file") MultipartFile file, @RequestParam("clear") boolean clear, HttpServletRequest request,
 			RedirectAttributes redirectAttributes) {

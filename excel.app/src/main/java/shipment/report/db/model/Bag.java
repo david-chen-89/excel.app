@@ -13,6 +13,7 @@ public class Bag {
 	private String location;
 	private String bag;
 	private String description;
+	private int quantity = 0;
 
 	public String getSku() {
 		return sku;
@@ -52,5 +53,13 @@ public class Bag {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
 	}
 }
