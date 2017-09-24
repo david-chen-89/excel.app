@@ -46,7 +46,6 @@ public final class Constants {
 		public static String Location = "Location";
 		public static String Bag = "Bag";
 		public static String Description = "Description";
-		public static String Quantity = "Quantity";
 	}
 
 	public static class TAB3 {

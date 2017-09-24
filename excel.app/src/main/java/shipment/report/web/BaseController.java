@@ -145,7 +145,6 @@ public class BaseController {
 		columns.add(Constants.FASTWAY_BAGS_GD.Location);
 		columns.add(Constants.FASTWAY_BAGS_GD.Bag);
 		columns.add(Constants.FASTWAY_BAGS_GD.Description);
-		columns.add(Constants.FASTWAY_BAGS_GD.Quantity);
 		model.put("columns", columns);
 
 		try {

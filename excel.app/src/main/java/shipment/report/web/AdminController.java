@@ -34,6 +34,7 @@ import shipment.report.original.Constants;
 
 @Controller
 public class AdminController {
+	private static final CSVFormat CSV_FORMAT = CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreEmptyLines();
 	private static Log logger = LogFactory.getLog(AdminController.class);
 	private static final String REDIRECT_ADMIN = "redirect:/admin";
 
@@ -45,18 +46,14 @@ public class AdminController {
 	@PostMapping("/load/tab1")
 	public String tradeMeUpload(@RequestParam("file") MultipartFile file, @RequestParam("clear") boolean clear, HttpServletRequest request,
 			RedirectAttributes redirectAttributes) {
-		if (file.isEmpty()) {
-			logger.warn(file.getOriginalFilename() + " is empty.");
-			redirectAttributes.addFlashAttribute("message", "Please select a file to upload.");
-			return REDIRECT_ADMIN;
-		}
+		if (isFileEmpty(file, redirectAttributes)) return REDIRECT_ADMIN;
 
 		logger.info(file.getOriginalFilename() + " uploaded from " + request.getRemoteAddr() + ".");
 		Reader in;
 		Iterable<CSVRecord> records;
 		try {
 			in = new InputStreamReader(file.getInputStream());
-			records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(in);
+			records = CSV_FORMAT.parse(in);
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute("message", e.getMessage());
 			logger.warn("Failed to parse csv file: " + file.getOriginalFilename(), e);
@@ -103,18 +100,14 @@ public class AdminController {
 	@PostMapping("/load/tab2")
 	public String bagUpload(@RequestParam("file") MultipartFile file, @RequestParam("clear") boolean clear, HttpServletRequest request,
 			RedirectAttributes redirectAttributes) {
-		if (file.isEmpty()) {
-			logger.warn(file.getOriginalFilename() + " is empty.");
-			redirectAttributes.addFlashAttribute("message", "Please select a file to upload.");
-			return REDIRECT_ADMIN;
-		}
+		if (isFileEmpty(file, redirectAttributes)) return REDIRECT_ADMIN;
 
 		logger.info(file.getOriginalFilename() + " uploaded from " + request.getRemoteAddr() + ".");
 		Reader in;
 		Iterable<CSVRecord> records;
 		try {
 			in = new InputStreamReader(file.getInputStream());
-			records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(in);
+			records = CSV_FORMAT.parse(in);
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute("message", e.getMessage());
 			logger.warn("failed to parse csv file: " + file.getOriginalFilename(), e);
@@ -311,5 +304,14 @@ public class AdminController {
 		tradeMe.setShippedBy(record.get(33));
 
 		return tradeMe;
+	}
+
+	private boolean isFileEmpty(MultipartFile file, RedirectAttributes redirectAttributes) {
+		if (file.isEmpty()) {
+			logger.warn(file.getOriginalFilename() + " is empty.");
+			redirectAttributes.addFlashAttribute("message", "Please select a file to upload.");
+			return true;
+		}
+		return false;
 	}
 }
