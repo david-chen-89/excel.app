@@ -29,6 +29,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import shipment.report.Util;
 import shipment.report.db.DbService;
 import shipment.report.db.model.Bag;
+import shipment.report.db.model.Stock;
 import shipment.report.db.model.TradeMe;
 import shipment.report.original.Constants;
 
@@ -160,6 +161,55 @@ public class AdminController {
 		return REDIRECT_ADMIN;
 	}
 
+	@PostMapping("/remove/in_stock")
+	public String stockRemove(HttpServletRequest request, RedirectAttributes redirectAttributes) {
+		logger.info("Remove all stock records from " + request.getRemoteAddr() + ".");
+		try {
+			dbService.removeAllStocks();
+			redirectAttributes.addFlashAttribute("message", "Stock Records removed!");
+		} catch (Exception e) {
+			logger.warn("Fail to remove record", e);
+			redirectAttributes.addFlashAttribute("message", e.getMessage());
+		}
+		return REDIRECT_ADMIN;
+	}
+
+	@PostMapping("/stock/in_stock")
+	public String stockIn(@RequestParam("file") MultipartFile file, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+		if (isFileEmpty(file, redirectAttributes)) return REDIRECT_ADMIN;
+
+		logger.info("Started stock in file: " + file.getOriginalFilename() + " from " + request.getRemoteAddr() + ".");
+
+		Reader in;
+		Iterable<CSVRecord> records;
+		try {
+			in = new InputStreamReader(file.getInputStream());
+			records = CSV_FORMAT.parse(in);
+		} catch (Exception e) {
+			redirectAttributes.addFlashAttribute("message", e.getMessage());
+			logger.warn("Failed to parse csv file: " + file.getOriginalFilename(), e);
+			return REDIRECT_ADMIN;
+		}
+
+		List<Stock> stocks = new ArrayList<Stock>();
+		String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+		for (CSVRecord record : records) {
+			Stock stock = parseStock(record, time);
+			stocks.add(stock);
+		}
+
+		try {
+			dbService.addStocks(stocks);
+		} catch (Exception e) {
+			redirectAttributes.addFlashAttribute("message", e.getMessage());
+			logger.warn("Failed in stock transaction for file: " + file.getOriginalFilename(), e);
+			return REDIRECT_ADMIN;
+		}
+
+		redirectAttributes.addFlashAttribute("message", "Stock transaction succeeded!");
+		return REDIRECT_ADMIN;
+	}
+
 	@GetMapping("/download")
 	public @ResponseBody void downloadCsv(@RequestParam("table") String table, HttpServletResponse response) {
 		response.setContentType("application/octet-stream");
@@ -179,8 +229,8 @@ public class AdminController {
 	}
 
 	private String getFileName(String table) {
-		String fileName = "table";
 		String date = dateFormat.format(new Date());
+		String fileName = table + date;
 		if ("tab1".equals(table)) {
 			fileName = "trademe_shipment_" + date;
 		} else if ("tab2".equals(table)) {
@@ -188,6 +238,7 @@ public class AdminController {
 		} else if ("tab3".equals(table)) {
 			fileName = "fastway_shipment_" + date;
 		}
+
 		return fileName;
 	}
 
@@ -212,6 +263,9 @@ public class AdminController {
 					Constants.TAB3.City, Constants.TAB3.Post_Code_required, Constants.TAB3.Email_Address, Constants.TAB3.Phone_Number, Constants.TAB3.Special1,
 					Constants.TAB3.Special2, Constants.TAB3.Special3, Constants.TAB3.Packaging, Constants.TAB3.Weight, Constants.TAB3.Count_Quantity,
 					Constants.TAB3.Packaging_types, Constants.TAB3.SKU, Constants.TAB3.Qty_Requested, Constants.TAB3.Unit_Price_Inc_Tax });
+		} else if ("in_stock".equalsIgnoreCase(table)) {
+			csvFileFormat = CSVFormat.DEFAULT.withHeader(new String[] { Constants.IN_STOCK.Barcode, Constants.IN_STOCK.Quantity, Constants.IN_STOCK.Date,
+					Constants.IN_STOCK.Note });
 		}
 		return csvFileFormat;
 	}
@@ -251,6 +305,11 @@ public class AdminController {
 				}
 				values.add(data);
 			}
+		} else if ("in_stock".equalsIgnoreCase(table)) {
+			List<Stock> stocks = dbService.getAllStocks();
+			for (Stock stock : stocks) {
+				values.add(new String[] { stock.getBarcode(), String.valueOf(stock.getQuantity()), stock.getDate(), stock.getNote() });
+			}
 		}
 		return values;
 	}
@@ -263,6 +322,21 @@ public class AdminController {
 		bag.setBag(record.get(3));
 		bag.setDescription(record.get(4));
 		return bag;
+	}
+
+	private Stock parseStock(CSVRecord record, String time) {
+		Stock stock = new Stock();
+		stock.setBarcode(record.get(0));
+		stock.setQuantity(Integer.valueOf(record.get(1).trim()));
+		if (record.size() > 2 && record.get(2).trim().isEmpty()) {
+			stock.setDate(time);
+		} else {
+			stock.setDate(record.get(2).trim());
+		}
+		if (record.size() > 3) {
+			stock.setNote(record.get(3));
+		}
+		return stock;
 	}
 
 	private TradeMe parseTradeMe(CSVRecord record) {

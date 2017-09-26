@@ -35,23 +35,16 @@ public class TradeMeId implements Serializable {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
 		TradeMeId other = (TradeMeId) obj;
 		if (productCode == null) {
-			if (other.productCode != null)
-				return false;
-		} else if (!productCode.equals(other.productCode))
-			return false;
+			if (other.productCode != null) return false;
+		} else if (!productCode.equals(other.productCode)) return false;
 		if (shipmentNumber == null) {
-			if (other.shipmentNumber != null)
-				return false;
-		} else if (!shipmentNumber.equals(other.shipmentNumber))
-			return false;
+			if (other.shipmentNumber != null) return false;
+		} else if (!shipmentNumber.equals(other.shipmentNumber)) return false;
 		return true;
 	}
 

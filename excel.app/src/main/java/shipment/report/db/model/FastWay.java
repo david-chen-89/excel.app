@@ -1,6 +1,5 @@
 package shipment.report.db.model;
 
-
 public class FastWay {
 	private String reference;
 	private String contactName;

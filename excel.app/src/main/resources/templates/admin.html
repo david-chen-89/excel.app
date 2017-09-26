@@ -30,7 +30,7 @@
 				<li><a href="#download">Download</a></li>
 				<li><a href="#tradeMe">TradeMe Shipment</a></li>
 				<li><a href="#bags">FastWay Bags</a></li>
-				<li><a href="#stock">Stock In/Out</a></li>
+				<li><a href="#stock">Stock In </a></li>
 			</ul>
 		</nav>
 		<div class="col-sm-9 ml-sm-auto col-md-10 pt-3">
@@ -45,7 +45,10 @@
 					</div>
 					<div class="col-xs-12 col-md-2">
 						<a href="/download?table=tab2">FastWay Bag</a>
-						</div>
+					</div>
+					<div class="col-xs-12 col-md-2">
+						<a href="/download?table=in_stock">Stock In</a>
+					</div>
 				</div>
 			</div>
 			<div class="panel panel-default" id="tradeMe">
@@ -80,7 +83,7 @@
 								<input type="text" class="form-control input-sm" name="productCode" placeholder="GDcharger0019" />
 							</div>
 						</div>
-						<button type="submit" class="btn btn-default">Submit</button>
+						<button type="submit" class="btn btn-default">Remove</button>
 					</form>
 				</div>
 			</div>
@@ -109,27 +112,24 @@
 								<input type="text" class="form-control input-sm" name="sku" placeholder="computer118" />
 							</div>
 						</div>
-						<button type="submit" class="btn btn-default">Submit</button>
+						<button type="submit" class="btn btn-default">Remove</button>
 					</form>
 				</div>
 			</div>
 			<div class="panel panel-default" id="stock">
-				<div class="panel-heading"><strong>Stock (Bags)</strong></div>
+				<div class="panel-heading"><strong>Stock In</strong></div>
 				<div class="panel-body">
 					<label>Stock In</label>
-					<form method="POST" enctype="multipart/form-data" action="/stock/in/tab2">
+					<form method="POST" enctype="multipart/form-data" action="/stock/in_stock">
 						<div class="form-group">
 							<input type="file" name="file" accept=".csv, text/csv" />
 						</div>
 						<button type="submit" class="btn btn-default">Submit</button>
 					</form>
 					<hr />
-					<label>Stock Out</label>
-					<form method="POST" enctype="multipart/form-data" action="/stock/out/tab2">
-						<div class="form-group">
-							<input type="file" name="file" accept=".csv, text/csv" />
-						</div>
-						<button type="submit" class="btn btn-default">Submit</button>
+					<form method="POST" action="/remove/in_stock" onsubmit="return confirm('do you really want to remove all stock data?');">
+						<label>Remove All Stock Data</label><br />
+						<button type="submit" class="btn btn-default" >Remove</button>
 					</form>
 				</div>
 			</div>

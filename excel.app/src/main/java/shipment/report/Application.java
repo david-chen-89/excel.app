@@ -93,6 +93,7 @@ public class Application {
 			app = SpringApplication.run(Application.class, args);
 		} catch (Exception e) {
 			logger.error("fail to start spring boot", e);
+			throw e;
 		}
 	}
 

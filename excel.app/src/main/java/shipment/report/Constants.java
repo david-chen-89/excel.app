@@ -72,6 +72,13 @@ public final class Constants {
 
 	}
 
+	public static class IN_STOCK {
+		public static String Barcode = "Barcode";
+		public static String Quantity = "Quantity";
+		public static String Date = "Date";
+		public static String Note = "Note";
+	}
+
 	public final static String FastwayQuery = "SELECT t.CUSTOMER_REFERENCE AS REFERENCE, " + "t.ORDER_NOTES_PUBLIC AS CONTACT_NAME, "
 			+ "t. CUSTOMER as COMPANY_NAME, " + "t.ADDRESS1, " + "t.ADDRESS2, " + "t.ADDRESS3 as SUBURB, " + "t.TOWN_CITY as CITY, " + "t.POST_CODE, "
 			+ "t.CUSTOMER_EMAIL as EMAIL_ADDRESS, " + "t.PHONE_NUMBER as PHONE, "

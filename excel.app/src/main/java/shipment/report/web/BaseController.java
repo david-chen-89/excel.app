@@ -9,11 +9,14 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import shipment.report.Constants;
 import shipment.report.Util;
 import shipment.report.db.DbService;
 import shipment.report.db.model.Bag;
+import shipment.report.db.model.Stock;
+import shipment.report.db.model.StockSummary;
 import shipment.report.db.model.TradeMe;
 
 @Controller
@@ -151,8 +154,7 @@ public class BaseController {
 			ArrayList<String[]> data = new ArrayList<String[]>();
 			List<Bag> bags = dbService.getAllBag();
 			for (Bag bag : bags) {
-				data.add(new String[] { bag.getSku(), bag.getBarcode(), bag.getLocation(), bag.getBag(), bag.getDescription(),
-						Integer.toString(bag.getQuantity()) });
+				data.add(new String[] { bag.getSku(), bag.getBarcode(), bag.getLocation(), bag.getBag(), bag.getDescription() });
 			}
 			model.put("data", data);
 		} catch (RuntimeException e) {
@@ -160,6 +162,45 @@ public class BaseController {
 			throw e;
 		}
 		return "index";
+	}
+
+	@GetMapping("in_stock")
+	public String in_stock(Map<String, Object> model) {
+		model.put("active", "in_stock");
+		ArrayList<String> columns = new ArrayList<String>();
+		columns.add(Constants.FASTWAY_BAGS_GD.Barcode);
+		columns.add(Constants.IN_STOCK.Quantity);
+		columns.add(Constants.FASTWAY_BAGS_GD.Description);
+		columns.add(Constants.FASTWAY_BAGS_GD.Bag);
+		columns.add(Constants.FASTWAY_BAGS_GD.Location);
+		model.put("columns", columns);
+
+		try {
+			ArrayList<String[]> data = new ArrayList<String[]>();
+			List<StockSummary> stockSummaries = dbService.getStockSummary();
+			for (StockSummary ss : stockSummaries) {
+				String link = "<a href='../stock/detail/" + ss.getBarcode() + "' data-toggle='modal' data-target='#stock_modal'>" + ss.getBarcode() + "</a>";
+				data.add(new String[] { link, String.valueOf(ss.getQuantity()), ss.getDescription(), ss.getBag(), ss.getLocation() });
+			}
+			model.put("data", data);
+		} catch (RuntimeException e) {
+			logger.error(e.getMessage());
+			throw e;
+		}
+		return "index";
+	}
+
+	@GetMapping("stock/detail/{barcode}")
+	public String admin(@PathVariable String barcode, Map<String, Object> model) {
+		model.put("barcode", barcode);
+		List<Stock> stocks = dbService.getAllStocks(barcode);
+		model.put("stocks", stocks);
+		int sum = 0;
+		for (Stock stock : stocks) {
+			sum += stock.getQuantity();
+		}
+		model.put("sum", sum);
+		return "stock_detail";
 	}
 
 	@GetMapping("admin")

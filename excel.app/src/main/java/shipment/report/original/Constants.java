@@ -70,6 +70,13 @@ public final class Constants {
 		public static String Unit_Price_Inc_Tax = "Unit Price Inc Tax";
 	}
 
+	public static class IN_STOCK {
+		public static String Barcode = "Barcode";
+		public static String Quantity = "Quantity";
+		public static String Date = "Date";
+		public static String Note = "Note";
+	}
+
 	private Constants() {
 	}
 }

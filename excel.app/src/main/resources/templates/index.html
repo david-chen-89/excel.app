@@ -10,15 +10,17 @@
 <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css" />
 <!-- <link rel="stylesheet" type="text/css" href="css/non-responsive.css" /> -->
 <script type="text/javascript" charset="utf8" src="js/jquery.js"></script>
+<script type="text/javascript" charset="utf8" src="js/bootstrap.min.js"></script>
 <script type="text/javascript" charset="utf8" src="js/jquery.dataTables.js"></script>
 
 <script type="text/javascript" th:inline="javascript">
 /*<![CDATA[*/
+         	 
            var columnList=[[${columns}]];
            var dataSet=[[${data}]];
            var cols =  new Array();
        	   for (i = 0; i < columnList.length; i++) {
-       		  var col = { title: columnList[i]};  // { title: "Salary" }
+       		  var col = { title: columnList[i]};  
         	  cols.push(col);
         	}
            $(document).ready(function() {
@@ -29,6 +31,7 @@
                    columns: cols,
                } );
                
+               //support checkbox
                $('.cb').on( 'click', function (e) {
                    //e.preventDefault();
             
@@ -38,10 +41,29 @@
                    column.visible($(this).is(":checked"));
                    $('#tab').width("100%");
                } );
+               
            } );
  	/*]]>*/
 </script>
 <script type="text/javascript">
+$('#stock_modal').on('loaded.bs.modal', function (e) {
+	  $('#stock_modal').removeData();
+	});
+
+	$(document).ready(function(){
+	  $('body').on('hidden.bs.modal', '.modal', function () {
+	    $(this).removeData('bs.modal');
+	  });
+	});
+
+	$(document).ready(function(){
+	  $('body').on('hidden.bs.modal', '.modal', function () {
+	    $(this).removeData('bs.modal');
+	    $("#" + $(this).attr("id") + " .modal-content").empty();
+	    $("#" + $(this).attr("id") + " .modal-content").append("Loading...");
+	  });
+	});
+
 function toggle(){
   	var img = $('#toggle');
   	var option = $('#option');
@@ -71,8 +93,25 @@ function toggle(){
 		</div>
 		<table id="tab" class="display"></table>
 	</div>
-	<!-- /container -->
 
+	<div id="stock_modal" class="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel">
+		 <div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<!-- <div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h5 class="modal-title" id="gridSystemModalLabel">Stock Detail</h5>
+				</div>
+				<div class="modal-body">
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div> -->
+			</div>
+		</div>
+	</div>
+	<!-- /container -->
 	<div th:replace="fragment/footer:: footer"></div>
 </body>
 </html>

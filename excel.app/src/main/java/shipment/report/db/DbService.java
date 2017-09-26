@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import shipment.report.db.model.Bag;
+import shipment.report.db.model.Stock;
+import shipment.report.db.model.StockSummary;
 import shipment.report.db.model.TradeMe;
 import shipment.report.db.model.TradeMeId;
 
@@ -21,6 +23,8 @@ public class DbService {
 	private TradeMeDao tradeMeDao;
 	@Autowired
 	private FastWayDao fastWayDao;
+	@Autowired
+	private StockDao stockDao;
 
 	public void addOrUpdateBags(List<Bag> bags) {
 		for (Bag bag : bags) {
@@ -75,5 +79,26 @@ public class DbService {
 	//FastWay
 	public List<Object[]> getAllFastWay() {
 		return fastWayDao.getAll();
+	}
+
+	//stock
+	public void addStocks(List<Stock> stocks) {
+		stockDao.save(stocks);
+	}
+
+	public void removeAllStocks() {
+		stockDao.removeAll();
+	}
+
+	public List<Stock> getAllStocks() {
+		return stockDao.getAll();
+	}
+
+	public List<StockSummary> getStockSummary() {
+		return stockDao.getStockSummary();
+	}
+
+	public List<Stock> getAllStocks(String barcoder) {
+		return stockDao.getAll(barcoder);
 	}
 }
