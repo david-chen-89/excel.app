@@ -20,6 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -174,8 +175,8 @@ public class AdminController {
 		return REDIRECT_ADMIN;
 	}
 
-	@PostMapping("/stock/in_stock")
-	public String stockIn(@RequestParam("file") MultipartFile file, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+	@PostMapping("/stock/in_stock/{opt}")
+	public String stockIn(@RequestParam("file") MultipartFile file, @PathVariable String opt, HttpServletRequest request, RedirectAttributes redirectAttributes) {
 		if (isFileEmpty(file, redirectAttributes)) return REDIRECT_ADMIN;
 
 		logger.info("Started stock in file: " + file.getOriginalFilename() + " from " + request.getRemoteAddr() + ".");
@@ -193,8 +194,10 @@ public class AdminController {
 
 		List<Stock> stocks = new ArrayList<Stock>();
 		String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+		boolean isAdd = opt.trim().equalsIgnoreCase("in"); // stock in or stock out
 		for (CSVRecord record : records) {
-			Stock stock = parseStock(record, time);
+			if (record.get(0).trim().isEmpty()) continue;
+			Stock stock = parseStock(record, time, isAdd);
 			stocks.add(stock);
 		}
 
@@ -324,11 +327,15 @@ public class AdminController {
 		return bag;
 	}
 
-	private Stock parseStock(CSVRecord record, String time) {
+	private Stock parseStock(CSVRecord record, String time, boolean isAdd) {
 		Stock stock = new Stock();
 		stock.setBarcode(record.get(0));
-		stock.setQuantity(Integer.valueOf(record.get(1).trim()));
-		if (record.size() > 2 && record.get(2).trim().isEmpty()) {
+		if (isAdd) {
+			stock.setQuantity((int) Double.parseDouble(record.get(1).trim()));
+		} else {
+			stock.setQuantity(-(int) Double.parseDouble(record.get(1).trim()));
+		}
+		if (record.size() < 3 || record.get(2).trim().isEmpty()) {
 			stock.setDate(time);
 		} else {
 			stock.setDate(record.get(2).trim());
